@@ -1,0 +1,1 @@
+export * as HouseWithRoomsWithPersons from './HouseWithRoomsWithPersons'
