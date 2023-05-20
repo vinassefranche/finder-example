@@ -18,9 +18,9 @@ All of them will log a message like `Time to retrieve all houses data: XXX.XXXms
 
 ## Results
 Here's the results of my run on my machine (the absolute values don't mean anything. It's only interesting to look at the relative improvements)
-- `yarn get-all-with-repositories`: ~1.4s
-- `yarn get-all-with-full-finder`: ~1.7s
-- `yarn get-all-with-simple-finder`: ~25ms
+- `yarn get-all-with-repositories`: ~1.15s
+- `yarn get-all-with-full-finder`: ~1.3s
+- `yarn get-all-with-simple-finder`: ~20ms
 
 We can see that using a finder that deserializes everything is not really better than fetching all the aggregates with their repositories. There might be an improvement with a database that is distant from the server running as these numbers are with a database and the scripts running in the same local machine. However, it's unlikely to be a huge improvement.
 Fetching only the necessary data is much better. The numbers are this different because I deliberately built my aggregates with a lot of data that is useless in the get all example but it shows that it can be a good solution to some data fetching performance issues.
