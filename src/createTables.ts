@@ -7,6 +7,10 @@ const client = new Client();
 const main = async () => {
   await client.connect();
 
+  await client.query(`DROP TABLE IF EXISTS house;`);
+  await client.query(`DROP TABLE IF EXISTS room;`);
+  await client.query(`DROP TABLE IF EXISTS person;`);
+
   await client.query(`CREATE TABLE IF NOT EXISTS house (
       id uuid PRIMARY KEY,
       name character varying not null,
