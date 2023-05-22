@@ -1,2 +1,2 @@
-export * from './pgHouseWithRoomsWithPersonsFinder'
-export * from './pgSimpleHouseWithRoomsWithPersonsFinder'
+export * from "./pgRoomWithHouseAndPersonFinder";
+export * from "./pgSimpleHouseWithRoomsWithPersonsFinder";

@@ -13,17 +13,21 @@ const main = async () => {
     const data = buildData();
     await pgHouseRepository.wipe();
     await pgHouseRepository.storeAll(data.houses);
+    console.log('store house done')
+    // console.log(data.rooms)
     await pgRoomRepository.wipe();
     await pgRoomRepository.storeAll(data.rooms);
+    console.log('store room done')
     await pgPersonRepository.wipe();
     await pgPersonRepository.storeAll(data.persons);
+    console.log('store person done')
 
     const house = await pgHouseRepository.getByName("My house");
     console.log(house.name);
     const rooms = await pgRoomRepository.findByHouseIds([house.id]);
     console.log(rooms.map(({ name }) => name));
-    const persons = await pgPersonRepository.findByRoomsIds(
-      rooms.map(({ id }) => id)
+    const persons = await pgPersonRepository.findByIds(
+      rooms.map(({ personId }) => personId)
     );
     console.log(persons.map(({ name }) => name));
   } catch (error) {

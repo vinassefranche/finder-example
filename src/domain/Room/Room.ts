@@ -12,14 +12,17 @@ export type Room = {
   name: string;
   availableBooks: ReadonlyArray<Book.Book>;
   houseId: string;
+  personId: string;
 };
 
 export const generateRandom = ({
   name,
   houseId,
+  personId,
 }: {
   name?: string;
   houseId: string;
+  personId: string;
 }): Room => ({
   id: uuidv4(),
   name: name ?? `Room ${chance.integer({ min: 0 })}`,
@@ -27,6 +30,7 @@ export const generateRandom = ({
     Book.generateRandom
   ),
   houseId,
+  personId,
 });
 
 export const decoder = Decoder.struct<Room>({
@@ -34,4 +38,5 @@ export const decoder = Decoder.struct<Room>({
   name: Decoder.string,
   availableBooks: Decoder.array(Book.decoder),
   houseId: Decoder.string,
+  personId: Decoder.string,
 });

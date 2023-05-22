@@ -6,74 +6,74 @@ type HouseWithRoomsAndPersons = {
   persons: ReadonlyArray<Person.Person>;
 };
 
+const buildRandomPersonWithRoom = (
+  houseId: string
+): { person: Person.Person; room: Room.Room } => {
+  const person = Person.generateRandom();
+  return {
+    person,
+    room: Room.generateRandom({ houseId, personId: person.id }),
+  };
+};
+
 const buildRandomHouseWithRoomsAndPersons = (): HouseWithRoomsAndPersons => {
   const house = House.generateRandom();
 
-  const room1 = Room.generateRandom({ houseId: house.id });
-  const room2 = Room.generateRandom({ houseId: house.id });
-  const room3 = Room.generateRandom({ houseId: house.id });
-  const room4 = Room.generateRandom({ houseId: house.id });
-
-  const person1 = Person.generateRandom({ roomId: room1.id });
-  const person2 = Person.generateRandom({ roomId: room1.id });
-  const person3 = Person.generateRandom({ roomId: room2.id });
-  const person4 = Person.generateRandom({ roomId: room3.id });
-  const person5 = Person.generateRandom({ roomId: room4.id });
+  const randomPersonsWithHouse = Array.from(Array(25)).map(() =>
+    buildRandomPersonWithRoom(house.id)
+  );
 
   return {
     house,
-    rooms: [room1, room2, room3, room4],
-    persons: [person1, person2, person3, person4, person5],
+    rooms: randomPersonsWithHouse.map(({ room }) => room),
+    persons: randomPersonsWithHouse.map(({ person }) => person),
   };
 };
 
 const buildKnownHouse = (): HouseWithRoomsAndPersons => {
   const house = House.generateRandom({ name: "My house" });
-  const flowerRoom = Room.generateRandom({
-    houseId: house.id,
-    name: "Flower room",
-  });
-  const magicalRoom = Room.generateRandom({
-    houseId: house.id,
-    name: "Magical room",
-  });
-  const fantasyRoom = Room.generateRandom({
-    houseId: house.id,
-    name: "Fantasy room",
-  });
-  const amazingRoom = Room.generateRandom({
-    houseId: house.id,
-    name: "Amazing room",
-  });
 
   const roger = Person.generateRandom({
     name: "Roger",
-    roomId: amazingRoom.id,
-  });
-  const josephine = Person.generateRandom({
-    name: "Josephine",
-    roomId: amazingRoom.id,
   });
 
   const josepha = Person.generateRandom({
     name: "Josepha",
-    roomId: magicalRoom.id,
   });
 
   const karim = Person.generateRandom({
     name: "Karim",
-    roomId: fantasyRoom.id,
   });
 
   const ebibi = Person.generateRandom({
     name: "Ebibi",
-    roomId: flowerRoom.id,
+  });
+
+  const flowerRoom = Room.generateRandom({
+    houseId: house.id,
+    personId: roger.id,
+    name: "Flower room",
+  });
+  const magicalRoom = Room.generateRandom({
+    houseId: house.id,
+    personId: josepha.id,
+    name: "Magical room",
+  });
+  const fantasyRoom = Room.generateRandom({
+    houseId: house.id,
+    personId: karim.id,
+    name: "Fantasy room",
+  });
+  const amazingRoom = Room.generateRandom({
+    houseId: house.id,
+    personId: ebibi.id,
+    name: "Amazing room",
   });
 
   return {
     house,
     rooms: [amazingRoom, magicalRoom, fantasyRoom, flowerRoom],
-    persons: [roger, josephine, josepha, karim, ebibi],
+    persons: [roger, josepha, karim, ebibi],
   };
 };
 

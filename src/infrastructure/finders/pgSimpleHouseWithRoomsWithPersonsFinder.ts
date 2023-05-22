@@ -2,48 +2,35 @@ import { either } from "fp-ts";
 import { pipe } from "fp-ts/lib/function";
 import * as Decoder from "io-ts/Decoder";
 import { Client } from "pg";
-import { SimpleHouseWithRoomsWithPersons } from "../../domain";
+import { SimpleRoomWithHouseAndPerson } from "../../domain";
 
-export const pgSimpleHouseWithRoomsWithPersonsFinder: SimpleHouseWithRoomsWithPersons.Finder =
+export const pgSimpleRoomWithHouseAndPersonFinder: SimpleRoomWithHouseAndPerson.Finder =
   {
     getAll: async () => {
       const client = new Client();
       await client.connect();
+      console.time('toto')
       const result = await client.query(`
-      with persons as (
-        SELECT
-          roomid,
-          jsonb_agg(person.name) persons
-        FROM
-          person
-        group by roomid
-      ), 
-      rooms AS (
-        SELECT
-          houseid,
-          jsonb_agg(jsonb_build_object('name', room.name, 'persons', persons.persons)) rooms
-        FROM
-          room
-        join persons on persons.roomid = room.id
-        group by houseid
-      )
-      select house.name as name, rooms.rooms as rooms from house
-      join rooms on rooms.houseid = house.id
+      select room.name as room_name, house.name as house_name, person.name as person_name
+        from room
+        join house on house.id = room.house_id
+        join person on person.id = room.person_id
     `);
       return pipe(
         result.rows,
-        either.traverseArray(
+        either.traverseArray(({ room_name, house_name, person_name }) =>
           Decoder.struct({
             name: Decoder.string,
-            rooms: Decoder.array(
-              Decoder.struct({
-                name: Decoder.string,
-                persons: Decoder.array(Decoder.string),
-              })
-            ),
-          }).decode
+            houseName: Decoder.string,
+            personName: Decoder.string,
+          }).decode({
+            name: room_name,
+            houseName: house_name,
+            personName: person_name,
+          })
         ),
         either.getOrElseW((e) => {
+          console.log(JSON.stringify(e));
           throw e;
         })
       );

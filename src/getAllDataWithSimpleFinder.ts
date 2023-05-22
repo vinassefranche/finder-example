@@ -1,7 +1,7 @@
 import { getAllDataWrapper } from "./getAllDataWrapper";
-import { pgSimpleHouseWithRoomsWithPersonsFinder } from "./infrastructure";
+import { pgSimpleRoomWithHouseAndPersonFinder } from "./infrastructure";
 
 getAllDataWrapper(
-  pgSimpleHouseWithRoomsWithPersonsFinder.getAll,
+  pgSimpleRoomWithHouseAndPersonFinder.getAll,
   "with-simple-finder-result.json"
 );

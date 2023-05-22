@@ -6,26 +6,26 @@ import {
 } from "./infrastructure";
 
 getAllDataWrapper(async () => {
-  const houses = await pgHouseRepository.getAll();
+  const rooms = await pgRoomRepository.getAll();
 
-  const rooms = await pgRoomRepository.findByHouseIds(
-    houses.map(({ id }) => id)
-  );
+  const [houses, persons] = await Promise.all([
+    pgHouseRepository.findByIds(rooms.map(({ houseId }) => houseId)),
+    await pgPersonRepository.findByIds(rooms.map(({ personId }) => personId)),
+  ]);
 
-  const persons = await pgPersonRepository.findByRoomsIds(
-    rooms.map(({ id }) => id)
-  );
-
-  return houses.map(({ name, id }) => {
-    const houseRooms = rooms.filter(({ houseId }) => houseId === id);
+  return rooms.map(({ name, houseId, personId }) => {
+    const personName = persons.find(({ id }) => personId === id)?.name;
+    if (!personName) {
+      throw new Error(`missing person ${personId} for room ${name}`);
+    }
+    const houseName = houses.find(({ id }) => houseId === id)?.name;
+    if (!houseName) {
+      throw new Error(`missing house ${houseId} for room ${name}`);
+    }
     return {
       name,
-      rooms: houseRooms.map(({ id, name }) => ({
-        name,
-        persons: persons
-          .filter(({ roomId }) => roomId === id)
-          .map(({ name }) => name),
-      })),
+      houseName,
+      personName,
     };
   });
 }, "with-repositories-result.json");

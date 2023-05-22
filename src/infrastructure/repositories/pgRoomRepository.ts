@@ -6,23 +6,46 @@ import { Room } from "../../domain";
 const tableName = "room";
 
 export const pgRoomRepository: Room.Repository = {
+  getAll: async () => {
+    const client = new Client();
+    await client.connect();
+    const result = await client.query(`SELECT * from ${tableName}`);
+    return pipe(
+      result.rows,
+      either.traverseArray(
+        ({ id, name, house_id, available_books, person_id }) =>
+          Room.decoder.decode({
+            id,
+            name,
+            availableBooks: available_books,
+            houseId: house_id,
+            personId: person_id,
+          })
+      ),
+      either.getOrElseW((e) => {
+        throw e;
+      })
+    );
+  },
   findByHouseIds: async (houseIds: ReadonlyArray<string>) => {
     const client = new Client();
     await client.connect();
     const result = await client.query(
-      `SELECT * from ${tableName} where houseid IN (${houseIds
+      `SELECT * from ${tableName} where house_id IN (${houseIds
         .map((id) => `'${id}'`)
         .join(", ")})`
     );
     return pipe(
       result.rows,
-      either.traverseArray(({ id, name, houseid, availablebooks }) =>
-        Room.decoder.decode({
-          id,
-          name,
-          availableBooks: availablebooks,
-          houseId: houseid,
-        })
+      either.traverseArray(
+        ({ id, name, house_id, available_books, person_id }) =>
+          Room.decoder.decode({
+            id,
+            name,
+            availableBooks: available_books,
+            houseId: house_id,
+            personId: person_id,
+          })
       ),
       either.getOrElseW((e) => {
         throw e;
@@ -34,12 +57,12 @@ export const pgRoomRepository: Room.Repository = {
     await client.connect();
     await client.query(`
         INSERT INTO 
-          ${tableName} (id, name, houseid, availableBooks)
+          ${tableName} (id, name, house_id, person_id, available_books)
         VALUES
           ${houses
             .map(
-              ({ id, name, availableBooks, houseId }) =>
-                `('${id}', '${name}', '${houseId}', '${JSON.stringify(
+              ({ id, name, availableBooks, houseId, personId }) =>
+                `('${id}', '${name}', '${houseId}', '${personId}', '${JSON.stringify(
                   availableBooks
                 )}')`
             )

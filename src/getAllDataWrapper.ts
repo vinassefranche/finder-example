@@ -1,24 +1,24 @@
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
-import { SimpleHouseWithRoomsWithPersons } from "./domain";
+import { SimpleRoomWithHouseAndPerson } from "./domain";
 
 dotenv.config();
 
 export const getAllDataWrapper = async (
   getAllData: () => Promise<
-    ReadonlyArray<SimpleHouseWithRoomsWithPersons.SimpleHouseWithRoomsWithPersons>
+    ReadonlyArray<SimpleRoomWithHouseAndPerson.SimpleRoomWithHouseAndPerson>
   >,
   fileNameToPrintTheData: string
 ) => {
   try {
-    console.time('Time to retrieve all houses data');
+    console.time("Time to retrieve all houses data");
     const housesData = await getAllData();
-    console.timeEnd('Time to retrieve all houses data');
+    console.timeEnd("Time to retrieve all houses data");
     fs.writeFileSync(
       path.resolve(__dirname, fileNameToPrintTheData),
       JSON.stringify(
-        SimpleHouseWithRoomsWithPersons.sort(housesData),
+        SimpleRoomWithHouseAndPerson.sort(housesData),
         undefined,
         2
       )

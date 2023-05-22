@@ -6,22 +6,21 @@ import { Person } from "../../domain";
 const tableName = "person";
 
 export const pgPersonRepository: Person.Repository = {
-  findByRoomsIds: async (roomsIds: ReadonlyArray<string>) => {
+  findByIds: async (personsIds: ReadonlyArray<string>) => {
     const client = new Client();
     await client.connect();
     const result = await client.query(
-      `SELECT * from ${tableName} where roomid IN (${roomsIds
-        .map((roomId) => `'${roomId}'`)
+      `SELECT * from ${tableName} where id IN (${personsIds
+        .map((personId) => `'${personId}'`)
         .join(", ")})`
     );
     return pipe(
       result.rows,
-      either.traverseArray(({ id, name, roomid, favoritebooks }) =>
+      either.traverseArray(({ id, name, favorite_books }) =>
         Person.decoder.decode({
           id,
           name,
-          favoriteBooks: favoritebooks,
-          roomId: roomid,
+          favoriteBooks: favorite_books,
         })
       ),
       either.getOrElseW((e) => {
@@ -34,14 +33,12 @@ export const pgPersonRepository: Person.Repository = {
     await client.connect();
     await client.query(`
         INSERT INTO 
-          ${tableName} (id, name, roomid, favoriteBooks)
+          ${tableName} (id, name, favorite_books)
         VALUES
           ${houses
             .map(
-              ({ id, name, favoriteBooks, roomId }) =>
-                `('${id}', '${name}', '${roomId}', '${JSON.stringify(
-                  favoriteBooks
-                )}')`
+              ({ id, name, favoriteBooks }) =>
+                `('${id}', '${name}', '${JSON.stringify(favoriteBooks)}')`
             )
             .join(",\n")};
       `);

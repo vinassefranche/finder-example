@@ -1,16 +1,12 @@
 import { getAllDataWrapper } from "./getAllDataWrapper";
-import { pgHouseWithRoomsWithPersonsFinder } from "./infrastructure";
+import { pgRoomWithHouseAndPersonFinder } from "./infrastructure";
 
 getAllDataWrapper(async () => {
-  const houses = await pgHouseWithRoomsWithPersonsFinder.getAll();
+  const rooms = await pgRoomWithHouseAndPersonFinder.getAll();
 
-  return houses.map(({ house, rooms }) => {
-    return {
-      name: house.name,
-      rooms: rooms.map(({ room, persons }) => ({
-        name: room.name,
-        persons: persons.map(({ name }) => name),
-      })),
-    };
-  });
+  return rooms.map(({ house, person, room }) => ({
+    name: room.name,
+    houseName: house.name,
+    personName: person.name,
+  }));
 }, "with-full-finder-result.json");

@@ -19,8 +19,28 @@ export const pgHouseRepository: House.Repository = {
       House.decoder.decode({
         id: result.rows[0].id,
         name: result.rows[0].name,
-        availableBooks: result.rows[0].availablebooks,
       }),
+      either.getOrElseW((e) => {
+        throw e;
+      })
+    );
+  },
+  findByIds: async (houseIds: ReadonlyArray<string>) => {
+    const client = new Client();
+    await client.connect();
+    const result = await client.query(
+      `SELECT * from ${tableName} where id IN (${houseIds
+        .map((houseId) => `'${houseId}'`)
+        .join(", ")})`
+    );
+    return pipe(
+      result.rows,
+      either.traverseArray(({ id, name }) =>
+        House.decoder.decode({
+          id,
+          name,
+        })
+      ),
       either.getOrElseW((e) => {
         throw e;
       })
@@ -32,11 +52,10 @@ export const pgHouseRepository: House.Repository = {
     const result = await client.query(`SELECT * from ${tableName}`);
     return pipe(
       result.rows,
-      either.traverseArray(({ id, name, availablebooks }) =>
+      either.traverseArray(({ id, name }) =>
         House.decoder.decode({
           id,
           name,
-          availableBooks: availablebooks,
         })
       ),
       either.getOrElseW((e) => {
@@ -49,14 +68,9 @@ export const pgHouseRepository: House.Repository = {
     await client.connect();
     await client.query(`
         INSERT INTO 
-          ${tableName} (id, name, availableBooks)
+          ${tableName} (id, name)
         VALUES
-          ${houses
-            .map(
-              ({ id, name, availableBooks }) =>
-                `('${id}', '${name}', '${JSON.stringify(availableBooks)}')`
-            )
-            .join(",\n")};
+          ${houses.map(({ id, name }) => `('${id}', '${name}')`).join(",\n")};
       `);
     return;
   },
