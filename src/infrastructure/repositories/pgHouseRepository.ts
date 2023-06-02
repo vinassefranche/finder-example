@@ -46,23 +46,6 @@ export const pgHouseRepository: House.Repository = {
       })
     );
   },
-  getAll: async () => {
-    const client = new Client();
-    await client.connect();
-    const result = await client.query(`SELECT * from ${tableName}`);
-    return pipe(
-      result.rows,
-      either.traverseArray(({ id, name }) =>
-        House.decoder.decode({
-          id,
-          name,
-        })
-      ),
-      either.getOrElseW((e) => {
-        throw e;
-      })
-    );
-  },
   storeAll: async (houses) => {
     const client = new Client();
     await client.connect();

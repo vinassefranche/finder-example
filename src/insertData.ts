@@ -14,7 +14,6 @@ const main = async () => {
     await pgHouseRepository.wipe();
     await pgHouseRepository.storeAll(data.houses);
     console.log('store house done')
-    // console.log(data.rooms)
     await pgRoomRepository.wipe();
     await pgRoomRepository.storeAll(data.rooms);
     console.log('store room done')
