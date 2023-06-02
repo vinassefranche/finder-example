@@ -19,7 +19,8 @@
     "get-all-with-full-finder": "ts-node --transpile-only src/getAllDataWithFullFinder.ts",
     "get-all-with-simple-finder": "ts-node --transpile-only src/getAllDataWithSimpleFinder.ts",
     "create-tables": "ts-node --transpile-only src/createTables.ts",
-    "insert-data": "ts-node --transpile-only src/insertData.ts"
+    "insert-data": "ts-node --transpile-only src/insertData.ts",
+    "typecheck": "yarn tsc --noEmit"
   },
   "devDependencies": {
     "@types/chance": "^1.1.3",
