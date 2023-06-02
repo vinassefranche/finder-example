@@ -10,7 +10,7 @@ getAllDataWrapper(async () => {
 
   const [houses, persons] = await Promise.all([
     pgHouseRepository.findByIds(rooms.map(({ houseId }) => houseId)),
-    await pgPersonRepository.findByIds(rooms.map(({ personId }) => personId)),
+    pgPersonRepository.findByIds(rooms.map(({ personId }) => personId)),
   ]);
 
   return rooms.map(({ name, houseId, personId }) => {
